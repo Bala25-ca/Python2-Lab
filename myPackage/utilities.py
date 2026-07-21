@@ -18,8 +18,11 @@ if __name__ == '__main__':
 #Using factorial function from math module
 import math
 
+def calculate_factorial(n):
+	"""Calculate the factorial of a given number n."""
+	return math.factorial(n)
 n = int(input("Enter a number to calculate its factorial: "))
-return_value = math.factorial(n)
+return_value = calculate_factorial(n)
 print(f"The factorial of {n} is: {return_value}")
 
 

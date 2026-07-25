@@ -18,10 +18,15 @@ class BankAccount:
         self.balance+= amount
 
     def withdraw(self, amount):
-        if amount <= self.balance:
-            self.balance -= amount
-        else:
-            print("Insufficient funds.")
+        try:
+            #amount < 0
+            if amount <= self.balance:
+                self.balance -= amount
+              
+            else:
+                print("Insufficient funds.")
+        except ValueError:
+            print("Invalid amount. Please enter a valid number.")
 
     def __str__(self):
         return f"Account Number: {self.account_number}, Account Holder: {self.account_owner}, Balance: ${self.balance}"

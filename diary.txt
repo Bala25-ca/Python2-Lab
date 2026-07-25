@@ -1,2 +1,3 @@
 
 New file created, read and used to write
+Diary text file created

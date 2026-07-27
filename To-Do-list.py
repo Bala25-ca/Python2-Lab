@@ -73,20 +73,21 @@ class Todo_list:
             return
         today = date.today()
         any_overdue = False
-        for i, t in enumerate(self.mylist, 1):
-            due = t.get("due") if isinstance(t, dict) else None
+        for i, task in enumerate(self.mylist, 1):
+            due = task.get("due") if isinstance(task, dict) else None
             if not due:
                 continue
             try:
                 due_date = datetime.strptime(due, "%Y-%m-%d").date()
             except ValueError:
-                print(f"Task {i} '{t.get('name', str(t))}': invalid date format '{due}'")
+                print(f"Task {i} '{task.get('task', str(task))}': invalid date format '{due}'")
                 continue
             if due_date < today:
-                print(f"Task {i} '{t.get('name')}': OVERDUE (due {due})")
-                any_overdue = True
+                print(f"Task {i} - '{task['task']}': OVERDUE (due {due})")               
+                any_overdue = True            
         if not any_overdue:
             print("No overdue tasks.")
+    
 
 
 # Function to display choice_menu:
@@ -119,17 +120,4 @@ def menu():
 
 # calling menu function
 menu()
-
-
-              
-         
-
-
-
-
-# Create an instance
-#obj = Todo_list()
-#obj.add_task("task1")
-#obj.add1_task()
-#obj.view_task()
 

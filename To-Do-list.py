@@ -22,6 +22,8 @@ class Todo_list:
                 print(f"{index}: {task['task']} - {task['status']}")
         print("\n")
 
+# Function to remove a task:
+
     def remove_task(self):
         if not self.mylist:
             print("no task to remove\n")
@@ -36,6 +38,9 @@ class Todo_list:
                 print("Invalid task number\n")
         except ValueError:
             print("Invalid input\n")
+
+
+# Function to mark a task as done:
 
     def mark_done(self):
         if not self.mylist:

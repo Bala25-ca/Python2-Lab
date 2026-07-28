@@ -1,3 +1,4 @@
 
 New file created, read and used to write
 Diary text file created
+C:\Users\cbala\AppData\Local\Programs\Python\Python314\python.exe c:/Users/cbala/WorkSpace/Persch-Git/Python2-Lab/data_persistence.py

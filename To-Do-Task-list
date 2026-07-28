@@ -1,0 +1,94 @@
+from datetime import datetime, date
+
+class Todo_list:
+    def __init__(self):
+        # Each task is a dict: {"name": str, "due": date string or None}
+        self.mytasks = []
+
+    def show_menu(self):
+        print("\nTo-Do Tasks")
+        print("1. Add Task")
+        print("2. Show Tasks")
+        print("3. Delete Task")
+        print("4. Overdue task")
+        print("5. Quit")
+
+    def add_task(self):
+        task = input("Enter task: ")
+        due = input("Enter due date (YYYY-MM-DD) or leave blank: ").strip()
+        if due == "":
+            due = None
+        self.mytasks.append({"name": task, "due": due})
+        print(f"Task '{task}' added.")
+
+    def show_tasks(self):
+        if not self.mytasks:
+            print("No tasks.")
+            return
+        print("Tasks:")
+        for i, t in enumerate(self.mytasks, 1):
+            due = t.get("due") if isinstance(t, dict) else None
+            due_str = f" (due: {due})" if due else ""
+            name = t["name"] if isinstance(t, dict) else str(t)
+            print(f"{i}. {name}{due_str}")
+
+    def remove_task(self):
+        if not self.mytasks:
+            print("No tasks to remove.")
+            return
+        self.show_tasks()
+        try:
+            task_num = int(input("Enter task number to remove: "))
+            if 1 <= task_num <= len(self.mytasks):
+                removed = self.mytasks.pop(task_num - 1)
+                name = removed["name"] if isinstance(removed, dict) else str(removed)
+                print(f"Task '{name}' removed.")
+            else:
+                print("Invalid task number.")
+        except ValueError:
+            print("Please enter a valid number.")
+
+
+
+    def is_task_overdue(self):
+        """Check stored tasks and print which are overdue."""
+        if not self.mytasks:
+            print("No tasks.")
+            return
+        today = date.today()
+        any_overdue = False
+        for i, t in enumerate(self.mytasks, 1):
+            due = t.get("due") if isinstance(t, dict) else None
+            if not due:
+                continue
+            try:
+                due_date = datetime.strptime(due, "%Y-%m-%d").date()
+            except ValueError:
+                print(f"Task {i} '{t.get('name', str(t))}': invalid date format '{due}'")
+                continue
+            if due_date < today:
+                print(f"Task {i} '{t.get('name')}': OVERDUE (due {due})")
+                any_overdue = True
+        if not any_overdue:
+            print("No overdue tasks.")
+
+            
+if __name__ == "__main__":
+    todo = Todo_list()
+    while True:
+        todo.show_menu()
+        choice = input("Enter choice (1-4):")
+
+        if choice == '1':
+            todo.add_task()
+        elif choice == '2':
+            todo.show_tasks()
+        elif choice == '3':
+            todo.remove_task()
+        elif choice == '4':
+            todo.is_task_overdue()
+        elif choice == '5':
+            print("Goodbye")
+            break
+        else:
+            print("Invalid choice")

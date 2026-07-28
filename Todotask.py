@@ -1,20 +1,58 @@
-import datetime
+import os
+import json
 from datetime import datetime, date
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_FILE = os.path.join(BASE_DIR, "datafile.txt")
+
 class Todo_list:
-    def __init__(self):
+    def __init__(self, datafile=DATA_FILE):
+        self.datafile = datafile
         self.mylist = []
+        self.load()
+
+    def load(self):
+        if not os.path.isfile(self.datafile):
+            self.mylist = []
+            return
+        try:
+            with open(self.datafile, 'r', encoding='utf-8') as file:
+                content = file.read().strip()
+                if not content:
+                    self.mylist = []
+                    return
+                try:
+                    self.mylist = json.loads(content)
+                    if not isinstance(self.mylist, list):
+                        raise ValueError("Task file must contain a list.")
+                except json.JSONDecodeError:
+                    lines = [line.strip() for line in content.splitlines() if line.strip()]
+                    self.mylist = [{"task": line, "status": "pending", "due": ""} for line in lines]
+        except OSError as error:
+            print(f"Failed to load tasks: {error}")
+            self.mylist = []
+
+    def save(self):
+        try:
+            with open(self.datafile, 'w', encoding='utf-8') as file:
+                json.dump(self.mylist, file, indent=2)
+        except OSError as error:
+            print(f"Failed to save tasks: {error}")
 
 
 # Add new task to do:
 
     def add_task(self):
-        task = input("Task to enter: ")
+        task = input("Task to enter: ").strip()
+        if not task:
+            print("Task cannot be empty.")
+            return
         due = input("Enter due date (YYYY-MM-DD) or leave blank: ").strip()
         if due == "":
-            due = None
+            due = ""
         self.mylist.append({"task": task, "status": "pending", "due": due})
-        print("new task added\n")
+        self.save()
+        print("New task added\n")
 
 # To view To-do tasks:
     def view_task(self):
@@ -22,10 +60,27 @@ class Todo_list:
         if not self.mylist:
             print("no task")
         else:
+            today = date.today()
             for index, task in enumerate(self.mylist, 1):
-                due = task.get("due") if isinstance(task, dict) else None
-                due = f" (due: {due})" if due else ""
-                print(f"{index}: {task['task']} - {task['status']} - {task['due']}")
+                due = task.get("due", "")
+                due_text = ""
+                if due:
+                    try:
+                        due_date = datetime.strptime(due, "%Y-%m-%d").date()
+                        delta = (due_date - today).days
+                        if delta > 0:
+                            due_text = f"due in {delta} days"
+                        elif delta == 0:
+                            due_text = "due today"
+                        else:
+                            due_text = f"overdue by {-delta} days"
+                    except ValueError:
+                        due_text = f"due: {due}"
+                status = task.get("status", "pending")
+                line_parts = [f"{index}: {task['task']}", status]
+                if due_text:
+                    line_parts.append(due_text)
+                print(" - ".join(line_parts))
         print("\n")
 
 # Function to remove a task:
@@ -39,6 +94,7 @@ class Todo_list:
             choice = int(input("Enter task number to remove: "))
             if 1 <= choice <= len(self.mylist):
                 removed = self.mylist.pop(choice - 1)
+                self.save()
                 print(f"Removed task: {removed['task']}\n")
             else:
                 print("Invalid task number\n")
@@ -57,6 +113,7 @@ class Todo_list:
             choice = int(input("Enter task number to mark done: "))
             if 1 <= choice <= len(self.mylist):
                 self.mylist[choice - 1]["status"] = "done"
+                self.save()
                 print("Task marked as done\n")
             else:
                 print("Invalid task number\n")
@@ -74,7 +131,7 @@ class Todo_list:
         today = date.today()
         any_overdue = False
         for i, task in enumerate(self.mylist, 1):
-            due = task.get("due") if isinstance(task, dict) else None
+            due = task.get("due", "")
             if not due:
                 continue
             try:
@@ -120,4 +177,3 @@ def menu():
 
 # calling menu function
 menu()
-
